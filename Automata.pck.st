@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4526] on 2 April 2021 at 9:55:38 pm'!
+'From Cuis 5.0 [latest update: #4963] on 16 December 2021 at 9:48:44 pm'!
 'Description A library of finite state machines'!
-!provides: 'Automata' 1 9!
+!provides: 'Automata' 1 13!
 SystemOrganization addCategory: 'Automata'!
 
 
@@ -473,6 +473,10 @@ stateLike: aState
 states
 	^states! !
 
+!Automaton methodsFor: 'accessing' stamp: 'DF 12/14/2021 22:11:47'!
+transitions
+	^transitions tuples! !
+
 !Automaton methodsFor: 'accessing' stamp: 'DF 3/15/2021 17:22:10'!
 unmarkAsAccepting: aState
 	accepting remove: aState! !
@@ -503,6 +507,36 @@ initialize
 !Automaton methodsFor: 'initialization' stamp: 'DF 3/13/2021 12:46:29'!
 newTransitionRelation
 	^self subclassResponsibility ! !
+
+!Automaton methodsFor: 'morphic' stamp: 'DF 12/16/2021 21:37:20'!
+asStateDiagram
+
+	^self asStateDiagram: #asString! !
+
+!Automaton methodsFor: 'morphic' stamp: 'DF 12/16/2021 21:45:20'!
+asStateDiagram: labelPrinter
+
+	| map aStateDiagram |
+	
+	map _ Dictionary new.
+	
+	aStateDiagram _ StateDiagram new.
+	
+	aStateDiagram stateRadius: 1.
+	
+	self states do:[:each | | aDiagramState | . aDiagramState _ DiagramState new radius:1 ; label: (each perform: labelPrinter) ; yourself . map at: each put: aDiagramState ].
+	
+	map do:[:each | aStateDiagram addState: each ].
+	
+	aStateDiagram setInitialState: (map at: start).
+	
+	accepting do:[:each | (map at:each) accepting: true].
+	
+	self transitions do:[:each | aStateDiagram connect:(map at:each from) to: (map at:each to) label: (each symbol perform: labelPrinter) ].
+	
+	^aStateDiagram
+
+	! !
 
 !DeterministicAutomaton methodsFor: 'as yet unclassified' stamp: 'DF 4/2/2021 21:51:35'!
 newTransitionRelation
@@ -546,6 +580,34 @@ toCanonicForm
 
 	^aDFA
 	! !
+
+!DFA class methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2021 21:27:18'!
+example
+
+	"self example"
+	
+	| aDFA a b c d |
+	
+	aDFA _ self new.
+		
+	a _ 'a'. b _ 'b'. c _ 'c'. d _ 'd'.
+	
+	aDFA alphabet: { #ab . #bc . #cd . #ac . #ca } asSet.
+	
+	aDFA addState: a ; addState: b; addState: c; addState: d.
+	
+	aDFA start: a.
+	
+	aDFA setTransitionFrom:  a onSymbol: #ab to: b.
+	aDFA setTransitionFrom:  b 	onSymbol: #bc to: c .
+	aDFA setTransitionFrom:  c 	onSymbol: #cd to: d .
+	aDFA setTransitionFrom:  a onSymbol: #ad to: d 	.
+	aDFA setTransitionFrom:  a 	onSymbol: #ac to: c .
+	aDFA setTransitionFrom:  c 	onSymbol: #ca to: a .
+	
+	^aDFA
+	
+! !
 
 !TuringMachine methodsFor: 'initialization' stamp: 'DF 4/2/2021 21:15:09'!
 initialize
@@ -1043,10 +1105,10 @@ from: anAssociation
 	^aTransition
 	! !
 
-!TransitionFunction methodsFor: 'printing' stamp: 'DF 3/13/2021 12:07:22'!
+!TransitionFunction methodsFor: 'printing' stamp: 'DF 12/14/2021 21:03:26'!
 printDotOn: aStream
 
-	tuples 	do: [:each | each printDotOn: aStream. aStream nextPut: Character lf ].! !
+	tuples 	do: [:eachDictionary | eachDictionary do:[:eachTransition | eachTransition printDotOn: aStream. aStream nextPut: Character lf ] ].! !
 
 !TransitionFunction methodsFor: 'converting' stamp: 'DF 4/2/2021 19:23:52'!
 asSet
@@ -1155,6 +1217,10 @@ add: aTransition
 	
 	index associations do:[:assoc | assoc value do:[:t | (assoc key first = t from) ifFalse:[self halt] ] ].
 ! !
+
+!TransitionRelation methodsFor: 'accessing' stamp: 'DF 12/14/2021 22:11:11'!
+tuples
+	^tuples! !
 
 !TransitionRelation methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2020 12:49:25'!
 epsilonClosureOf: aSet
