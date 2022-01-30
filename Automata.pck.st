@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4963] on 16 December 2021 at 9:48:44 pm'!
+'From Cuis 5.0 [latest update: #4963] on 30 January 2022 at 4:08:46 pm'!
 'Description A library of finite state machines'!
-!provides: 'Automata' 1 13!
+!provides: 'Automata' 1 20!
 SystemOrganization addCategory: 'Automata'!
 
 
@@ -473,9 +473,9 @@ stateLike: aState
 states
 	^states! !
 
-!Automaton methodsFor: 'accessing' stamp: 'DF 12/14/2021 22:11:47'!
+!Automaton methodsFor: 'accessing' stamp: 'DF 1/30/2022 15:24:36'!
 transitions
-	^transitions tuples! !
+	^transitions ! !
 
 !Automaton methodsFor: 'accessing' stamp: 'DF 3/15/2021 17:22:10'!
 unmarkAsAccepting: aState
@@ -546,6 +546,12 @@ newTransitionRelation
 atState: aState atSymbol: aString
 	^transitions transitionAt: aState at: aString ifAbsent:[self error: 'Invalid transition'].! !
 
+!DFA methodsFor: 'accessing' stamp: 'DF 1/17/2022 16:09:39'!
+addTransition: aTransition
+	
+	transitions put: aTransition
+	! !
+
 !DFA methodsFor: 'accessing' stamp: 'DF 9/27/2020 11:37:54'!
 setTransitionFrom: fromState onSymbol: aSymbol to: toState
 
@@ -558,12 +564,12 @@ setTransitionFrom: fromState onSymbol: aSymbol to: toState
 	transitions put: aTransition
 	! !
 
-!DFA methodsFor: 'converting' stamp: 'DF 4/2/2021 18:58:10'!
+!DFA methodsFor: 'converting' stamp: 'DF 1/30/2022 15:14:35'!
 toCanonicForm
 	
 	| id aDFA |
 	
-	aDFA := DFA new.
+	aDFA := self class new.
 		
 	aDFA alphabet: alphabet.
 	
@@ -574,7 +580,7 @@ toCanonicForm
 	
 	(1 to: states size) do:[:i | aDFA addState: i].
 		
-	(transitions select:[:each | true ]) do:[:each |
+	transitions do:[:each |
 		aDFA setTransitionFrom: (id at:each from) onSymbol: (each symbol) to: (id at:each to).
 	].
 
@@ -631,7 +637,7 @@ stopState: anInteger
 
 	accepting add: anInteger! !
 
-!TuringMachine methodsFor: 'visualization' stamp: 'DF 4/2/2021 20:39:07'!
+!TuringMachine methodsFor: 'visualization' stamp: 'DF 1/30/2022 15:24:54'!
 asStateDiagram
 
 	| aStateDiagram diagramStates automatonStates diagramTransitions transitionSets |
@@ -640,7 +646,7 @@ asStateDiagram
 
 	automatonStates _ Set new.
 	
-	transitions tuples do:[:each | automatonStates add: each from. automatonStates add: each to ].
+	transitions do:[:each | automatonStates add: each from. automatonStates add: each to ].
 	
 	diagramStates _ Dictionary new.
 	
@@ -654,7 +660,7 @@ asStateDiagram
 	
 	"create turing machine transition objects from the program tuples"
 	
-	diagramTransitions _ transitions tuples collect:[:each | each copy].
+	diagramTransitions _ transitions collect:[:each | each copy].
 	
 	"replace the from/to states by their corresponding diagram states"
 	
@@ -710,8 +716,8 @@ addTransitionFrom: fromState onSymbol: aSymbol to: toState
 newTransitionRelation
 	^TransitionRelation new! !
 
-!NFA methodsFor: 'as yet unclassified' stamp: 'DF 4/2/2021 18:58:17'!
-toDFA: aDFAClass withStateBuilder: aStateClass
+!NFA methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2022 17:47:39'!
+toDFA: aDFAClass 
 	
 	| aDFA current todo |
 		
@@ -721,7 +727,7 @@ toDFA: aDFAClass withStateBuilder: aStateClass
 	
 	aDFA alphabet: alphabet.
 	
-	current := aStateClass new: (transitions epsilonClosureOf: (Set with:start)).
+	current := aDFA stateBuilder new: (transitions epsilonClosureOf: (Set with:start)).
 	
 	aDFA addState: current. 
 	aDFA start: current.
@@ -748,7 +754,7 @@ toDFA: aDFAClass withStateBuilder: aStateClass
 					todo addLast: next.
 					existingState := next.
 				].
-				aDFA setTransitionFrom: current onSymbol: eachSymbol to: existingState.
+				aDFA addTransition: (aDFA transitionBuilder new symbol: eachSymbol ; from: current ; to: existingState; yourself).
 			]
 		]
 	].
@@ -825,10 +831,6 @@ step
 	state := instruction to.
 	! !
 
-!CompositeState methodsFor: 'accessing' stamp: 'DF 3/16/2021 13:18:32'!
-hash
-	^items hash! !
-
 !CompositeState methodsFor: 'accessing' stamp: 'DF 3/16/2021 13:07:52'!
 items
 	^items! !
@@ -842,7 +844,11 @@ next: aSymbol in: aTransitionRelation
 
 	^self class new: (aTransitionRelation epsilonClosureOf: (aTransitionRelation fromStateSet: items at: aSymbol))! !
 
-!CompositeState methodsFor: 'testing' stamp: 'DF 3/16/2021 13:16:37'!
+!CompositeState methodsFor: 'testing' stamp: 'DF 3/16/2021 13:13:14'!
+isEmpty
+	^items isEmpty! !
+
+!CompositeState methodsFor: 'comparing' stamp: 'DF 3/16/2021 13:16:37'!
 = aState
 
 	self == aState ifTrue: [^ true].
@@ -850,9 +856,9 @@ next: aSymbol in: aTransitionRelation
 
 	^items = aState items! !
 
-!CompositeState methodsFor: 'testing' stamp: 'DF 3/16/2021 13:13:14'!
-isEmpty
-	^items isEmpty! !
+!CompositeState methodsFor: 'comparing' stamp: 'DF 3/16/2021 13:18:32'!
+hash
+	^items hash! !
 
 !CompositeState class methodsFor: 'instance creation' stamp: 'DF 3/16/2021 13:11:41'!
 new: items
@@ -966,7 +972,7 @@ printDotOn: aStream
 from
 	^from! !
 
-!Transition methodsFor: 'accessing' stamp: 'DF 9/23/2020 18:54:11'!
+!Transition methodsFor: 'accessing' stamp: 'DF 1/18/2022 22:17:31'!
 from: aState
 	from := aState! !
 
@@ -1003,7 +1009,7 @@ asTuple
 hash
 	^ from hash bitXor: (symbol hash bitXor: to hash)! !
 
-!Transition methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2020 12:48:10'!
+!Transition methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2022 13:48:50'!
 replaceFromWith: aState
 
 	| aTransition |
@@ -1014,7 +1020,7 @@ replaceFromWith: aState
 	
 	^aTransition! !
 
-!Transition methodsFor: 'as yet unclassified' stamp: 'DF 9/27/2020 12:54:12'!
+!Transition methodsFor: 'as yet unclassified' stamp: 'DF 1/20/2022 13:48:58'!
 replaceToWith: aState
 
 	| aTransition |
@@ -1110,42 +1116,10 @@ printDotOn: aStream
 
 	tuples 	do: [:eachDictionary | eachDictionary do:[:eachTransition | eachTransition printDotOn: aStream. aStream nextPut: Character lf ] ].! !
 
-!TransitionFunction methodsFor: 'converting' stamp: 'DF 4/2/2021 19:23:52'!
-asSet
-
-	| aSet |
-	
-	aSet := Set new.
-	
-	tuples do:[:eachDictionary | aSet addAll: (eachDictionary collect: [:each | each asTuple ]) ].
-	
-	^aSet
-	! !
-
-!TransitionFunction methodsFor: 'accessing' stamp: 'DF 3/16/2021 17:36:27'!
-at: aState at: aSymbol ifAbsent: aBlock
-
-	^tuples at: aState 
-		ifPresent:[:aDictionary | 
-			aDictionary at: aSymbol 
-				ifPresent:[:aTransition | aTransition to] 
-				ifAbsent:aBlock ]
-		ifAbsent:aBlock
-	! !
-
 !TransitionFunction methodsFor: 'accessing' stamp: 'DF 10/27/2020 14:32:24'!
 put: aTransition
 
 	(tuples at: aTransition from ifAbsentPut:[Dictionary new]) at: aTransition symbol put: aTransition.! !
-
-!TransitionFunction methodsFor: 'accessing' stamp: 'DF 11/16/2020 16:21:13'!
-removeState: aState
-
-	tuples removeKey: aState ifAbsent:[].
-	
-	tuples values do:[:each | each keysAndValuesRemove:[:key :value | value to = aState ] ].
-	
-	! !
 
 !TransitionFunction methodsFor: 'accessing' stamp: 'DF 4/2/2021 19:32:39'!
 transitionAt: aState at: aSymbol ifAbsent: aBlock
@@ -1158,44 +1132,15 @@ transitionAt: aState at: aSymbol ifAbsent: aBlock
 		ifAbsent:aBlock
 	! !
 
-!TransitionFunction methodsFor: 'accessing' stamp: 'DF 4/2/2021 20:37:28'!
-tuples
-
-	| aSet |
-	
-	aSet := Set new.
-	
-	tuples do:[:eachDictionary | aSet addAll: eachDictionary values ].
-	
-	^aSet
-! !
-
 !TransitionFunction methodsFor: 'initialization' stamp: 'DF 9/25/2020 14:19:36'!
 initialize
 	tuples := Dictionary new! !
 
-!TransitionFunction methodsFor: 'enumerating' stamp: 'DF 10/1/2020 10:23:47'!
-entering: aState
+!TransitionFunction methodsFor: 'enumerating' stamp: 'DF 1/19/2022 19:17:22'!
+do: aBlock
 
-	^ self select:[:each | each to = aState ]
+	tuples do:[:eachDictionary | eachDictionary do: aBlock ].
 ! !
-
-!TransitionFunction methodsFor: 'enumerating' stamp: 'DF 10/28/2020 10:28:11'!
-exiting: aState
-
-	^tuples at: aState ifPresent:[:aDictionary | aDictionary values] ifAbsent:[Set new].! !
-
-!TransitionFunction methodsFor: 'enumerating' stamp: 'DF 10/27/2020 14:43:50'!
-select: aBlock
-
-	^ (tuples values collect:[:each | each values ]) flatten select: aBlock
-	
-! !
-
-!TransitionFunction methodsFor: 'testing' stamp: 'DF 9/29/2020 13:21:27'!
-isCyclicState: aState
-
-	^ ((self exiting: aState) select:[:each | each to = aState]) notEmpty! !
 
 !TransitionRelation methodsFor: 'printing' stamp: 'DF 9/24/2020 12:01:17'!
 printDotOn: aStream
