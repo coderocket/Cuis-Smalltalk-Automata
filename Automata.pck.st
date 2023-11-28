@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #6053] on 28 November 2023 at 9:02:11 pm'!
+'From Cuis 6.0 [latest update: #6053] on 28 November 2023 at 10:55:16 pm'!
 'Description A library of finite state machines'!
-!provides: 'Automata' 1 21!
+!provides: 'Automata' 1 22!
 SystemOrganization addCategory: #Automata!
 
 
@@ -412,6 +412,11 @@ mouseButton1Up: anEvent localPosition: aPoint
 setSelector: aSelector
 	setSelector _ aSelector! !
 
+!Automaton methodsFor: 'accessing' stamp: 'DF 11/28/2023 15:32:59'!
+accepting
+	^accepting
+	! !
+
 !Automaton methodsFor: 'accessing' stamp: 'DF 3/13/2021 12:42:51'!
 addState: aState
 	states add: aState! !
@@ -535,7 +540,7 @@ setTransitionFrom: fromState onSymbol: aSymbol to: toState
 	transitions put: aTransition
 	! !
 
-!DFA methodsFor: 'converting' stamp: 'DF 1/30/2022 15:14:35'!
+!DFA methodsFor: 'converting' stamp: 'DF 11/28/2023 15:54:21'!
 toCanonicForm
 	
 	| id aDFA |
@@ -554,6 +559,10 @@ toCanonicForm
 	transitions do:[:each |
 		aDFA setTransitionFrom: (id at:each from) onSymbol: (each symbol) to: (id at:each to).
 	].
+
+	aDFA start: (id at:start).
+	
+	accepting do:[:each | aDFA markAsAccepting: (id at: each) ].
 
 	^aDFA
 	! !
@@ -666,12 +675,12 @@ new: anXraySymbol
 	
 	^aTuringMachine! !
 
-!NFA methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2020 12:48:58'!
+!NFA methodsFor: 'as yet unclassified' stamp: 'DF 11/28/2023 22:19:02'!
 addTransitionFrom: fromState onSymbol: aSymbol to: toState
 
 	| aTransition |
 	
-	aTransition := Transition new.
+	aTransition := self transitionClass new.
 	
 	aTransition from: fromState.
 	
@@ -687,7 +696,7 @@ addTransitionFrom: fromState onSymbol: aSymbol to: toState
 newTransitionRelation
 	^TransitionRelation new! !
 
-!NFA methodsFor: 'as yet unclassified' stamp: 'DF 1/17/2022 17:47:39'!
+!NFA methodsFor: 'as yet unclassified' stamp: 'DF 11/28/2023 15:20:35'!
 toDFA: aDFAClass 
 	
 	| aDFA current todo |
@@ -730,8 +739,14 @@ toDFA: aDFAClass
 		]
 	].
 
+	aDFA states do:[:each | (each items allSatisfy:[:nfaState | self isAccepting: nfaState ]) ifTrue:[ aDFA markAsAccepting: each] ].
+
 	^aDFA
 		! !
+
+!NFA methodsFor: 'as yet unclassified' stamp: 'DF 11/28/2023 22:18:41'!
+transitionClass
+	^Transition! !
 
 !AutomatonVM methodsFor: 'accessing' stamp: 'DF 4/2/2021 21:17:41'!
 automaton: anAutomaton
