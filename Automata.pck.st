@@ -1,228 +1,199 @@
-'From Cuis 5.0 [latest update: #4963] on 30 January 2022 at 4:08:46 pm'!
+'From Cuis 6.0 [latest update: #6053] on 28 November 2023 at 9:02:11 pm'!
 'Description A library of finite state machines'!
-!provides: 'Automata' 1 20!
-SystemOrganization addCategory: 'Automata'!
+!provides: 'Automata' 1 21!
+SystemOrganization addCategory: #Automata!
 
 
-!classDefinition: #TapeMorph category: 'Automata'!
+!classDefinition: #TapeMorph category: #Automata!
 LayoutMorph subclass: #TapeMorph
 	instanceVariableNames: 'interval model'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'TapeMorph class' category: 'Automata'!
+!classDefinition: 'TapeMorph class' category: #Automata!
 TapeMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #CellMorph category: 'Automata'!
+!classDefinition: #CellMorph category: #Automata!
 UpdatingLabelMorph subclass: #CellMorph
 	instanceVariableNames: 'sequence index alphabet model setter getter alphabetGetter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'CellMorph class' category: 'Automata'!
+!classDefinition: 'CellMorph class' category: #Automata!
 CellMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #UpdatingAlignedLabelMorph category: 'Automata'!
+!classDefinition: #UpdatingAlignedLabelMorph category: #Automata!
 UpdatingLabelMorph subclass: #UpdatingAlignedLabelMorph
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'UpdatingAlignedLabelMorph class' category: 'Automata'!
+!classDefinition: 'UpdatingAlignedLabelMorph class' category: #Automata!
 UpdatingAlignedLabelMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #PointerMorph category: 'Automata'!
+!classDefinition: #PointerMorph category: #Automata!
 UpdatingAlignedLabelMorph subclass: #PointerMorph
 	instanceVariableNames: 'index setSelector'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'PointerMorph class' category: 'Automata'!
+!classDefinition: 'PointerMorph class' category: #Automata!
 PointerMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #Automaton category: 'Automata'!
+!classDefinition: #Automaton category: #Automata!
 Object subclass: #Automaton
 	instanceVariableNames: 'states transitions start alphabet accepting'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'Automaton class' category: 'Automata'!
+!classDefinition: 'Automaton class' category: #Automata!
 Automaton class
 	instanceVariableNames: ''!
 
-!classDefinition: #DeterministicAutomaton category: 'Automata'!
+!classDefinition: #DeterministicAutomaton category: #Automata!
 Automaton subclass: #DeterministicAutomaton
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'DeterministicAutomaton class' category: 'Automata'!
+!classDefinition: 'DeterministicAutomaton class' category: #Automata!
 DeterministicAutomaton class
 	instanceVariableNames: ''!
 
-!classDefinition: #DFA category: 'Automata'!
+!classDefinition: #DFA category: #Automata!
 DeterministicAutomaton subclass: #DFA
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'DFA class' category: 'Automata'!
+!classDefinition: 'DFA class' category: #Automata!
 DFA class
 	instanceVariableNames: ''!
 
-!classDefinition: #TuringMachine category: 'Automata'!
+!classDefinition: #TuringMachine category: #Automata!
 DeterministicAutomaton subclass: #TuringMachine
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'TuringMachine class' category: 'Automata'!
+!classDefinition: 'TuringMachine class' category: #Automata!
 TuringMachine class
 	instanceVariableNames: ''!
 
-!classDefinition: #NFA category: 'Automata'!
+!classDefinition: #NFA category: #Automata!
 Automaton subclass: #NFA
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'NFA class' category: 'Automata'!
+!classDefinition: 'NFA class' category: #Automata!
 NFA class
 	instanceVariableNames: ''!
 
-!classDefinition: #AutomatonVM category: 'Automata'!
+!classDefinition: #AutomatonVM category: #Automata!
 Object subclass: #AutomatonVM
 	instanceVariableNames: 'automaton state head tape'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'AutomatonVM class' category: 'Automata'!
+!classDefinition: 'AutomatonVM class' category: #Automata!
 AutomatonVM class
 	instanceVariableNames: ''!
 
-!classDefinition: #DFAVM category: 'Automata'!
+!classDefinition: #DFAVM category: #Automata!
 AutomatonVM subclass: #DFAVM
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'DFAVM class' category: 'Automata'!
+!classDefinition: 'DFAVM class' category: #Automata!
 DFAVM class
 	instanceVariableNames: ''!
 
-!classDefinition: #TMVM category: 'Automata'!
+!classDefinition: #TMVM category: #Automata!
 AutomatonVM subclass: #TMVM
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'TMVM class' category: 'Automata'!
+!classDefinition: 'TMVM class' category: #Automata!
 TMVM class
 	instanceVariableNames: ''!
 
-!classDefinition: #CompositeState category: 'Automata'!
+!classDefinition: #CompositeState category: #Automata!
 Object subclass: #CompositeState
 	instanceVariableNames: 'items'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'CompositeState class' category: 'Automata'!
+!classDefinition: 'CompositeState class' category: #Automata!
 CompositeState class
 	instanceVariableNames: ''!
 
-!classDefinition: #Tape category: 'Automata'!
+!classDefinition: #Epsilon category: #Automata!
+Object subclass: #Epsilon
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Automata'!
+!classDefinition: 'Epsilon class' category: #Automata!
+Epsilon class
+	instanceVariableNames: ''!
+
+!classDefinition: #Tape category: #Automata!
 Object subclass: #Tape
 	instanceVariableNames: 'blank activePositive activeNegative'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'Tape class' category: 'Automata'!
+!classDefinition: 'Tape class' category: #Automata!
 Tape class
 	instanceVariableNames: ''!
 
-!classDefinition: #Transition category: 'Automata'!
+!classDefinition: #Transition category: #Automata!
 Object subclass: #Transition
 	instanceVariableNames: 'from to symbol'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'Transition class' category: 'Automata'!
+!classDefinition: 'Transition class' category: #Automata!
 Transition class
 	instanceVariableNames: ''!
 
-!classDefinition: #TuringMachineTransition category: 'Automata'!
+!classDefinition: #TuringMachineTransition category: #Automata!
 Transition subclass: #TuringMachineTransition
 	instanceVariableNames: 'writeSymbol headDirection'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'TuringMachineTransition class' category: 'Automata'!
+!classDefinition: 'TuringMachineTransition class' category: #Automata!
 TuringMachineTransition class
 	instanceVariableNames: ''!
 
-!classDefinition: #TransitionFunction category: 'Automata'!
+!classDefinition: #TransitionFunction category: #Automata!
 Object subclass: #TransitionFunction
 	instanceVariableNames: 'tuples'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'TransitionFunction class' category: 'Automata'!
+!classDefinition: 'TransitionFunction class' category: #Automata!
 TransitionFunction class
 	instanceVariableNames: ''!
 
-!classDefinition: #TransitionRelation category: 'Automata'!
+!classDefinition: #TransitionRelation category: #Automata!
 Object subclass: #TransitionRelation
 	instanceVariableNames: 'tuples index'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Automata'!
-!classDefinition: 'TransitionRelation class' category: 'Automata'!
+!classDefinition: 'TransitionRelation class' category: #Automata!
 TransitionRelation class
 	instanceVariableNames: ''!
 
-
-!Tape methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2021 16:48:33'!
-format
-	activeNegative atAllPut: blank.
-	activePositive atAllPut: blank.! !
-
-!Transition methodsFor: 'printing' stamp: 'DF 9/30/2020 22:26:52'!
-printOn: aStream
-
-	super printOn: aStream.
-	
-	aStream nextPut:$(.
-	
-	from printOn: aStream.
-	
-	aStream nextPut:$,.
-	
-	symbol printOn: aStream.
-	
-	aStream nextPut:$,.
-	
-	to printOn: aStream.
-	
-	aStream nextPut:$).
-! !
-
-!TransitionFunction methodsFor: 'printing' stamp: 'DF 9/25/2020 14:26:03'!
-printOn: aStream
-
-	super printOn: aStream.	
-	tuples printOn: aStream.
-! !
-
-!TransitionRelation methodsFor: 'printing' stamp: 'DF 9/23/2020 19:08:37'!
-printOn: aStream
-
-	super printOn: aStream.
-	
-	tuples printOn: aStream.! !
 
 !TapeMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2021 16:29:40'!
 adoptWidgetsColor: aColor
@@ -920,6 +891,11 @@ at: anInteger put: aSymbol
 blank
 	^blank! !
 
+!Tape methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2021 16:48:33'!
+format
+	activeNegative atAllPut: blank.
+	activePositive atAllPut: blank.! !
+
 !Tape methodsFor: 'as yet unclassified' stamp: 'DF 12/23/2020 13:27:58'!
 initialize
 
@@ -967,6 +943,26 @@ printDotOn: aStream
 	symbol printDotOn: aStream.
 	
 	aStream nextPutAll: '" ];'.! !
+
+!Transition methodsFor: 'printing' stamp: 'DF 9/30/2020 22:26:52'!
+printOn: aStream
+
+	super printOn: aStream.
+	
+	aStream nextPut:$(.
+	
+	from printOn: aStream.
+	
+	aStream nextPut:$,.
+	
+	symbol printOn: aStream.
+	
+	aStream nextPut:$,.
+	
+	to printOn: aStream.
+	
+	aStream nextPut:$).
+! !
 
 !Transition methodsFor: 'accessing' stamp: 'DF 9/23/2020 18:54:36'!
 from
@@ -1079,7 +1075,7 @@ isReadTransition
 !TuringMachineTransition methodsFor: 'converting' stamp: 'DF 4/2/2021 19:19:33'!
 asTuple
 
-	^{ from . symbol . writeSymbol . ( (headDirection = 1) ifTrue:[ ''] ifFalse:[ (headDirection = 0) ifTrue:[  '' ] ifFalse:[ ''] ] )  . to }
+	^{ from . symbol . writeSymbol . ( (headDirection = 1) ifTrue:[ '^'] ifFalse:[ (headDirection = 0) ifTrue:[  '' ] ifFalse:[ ':='] ] )  . to }
 	! !
 
 !TuringMachineTransition class methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2021 17:28:03'!
@@ -1116,6 +1112,13 @@ printDotOn: aStream
 
 	tuples 	do: [:eachDictionary | eachDictionary do:[:eachTransition | eachTransition printDotOn: aStream. aStream nextPut: Character lf ] ].! !
 
+!TransitionFunction methodsFor: 'printing' stamp: 'DF 9/25/2020 14:26:03'!
+printOn: aStream
+
+	super printOn: aStream.	
+	tuples printOn: aStream.
+! !
+
 !TransitionFunction methodsFor: 'accessing' stamp: 'DF 10/27/2020 14:32:24'!
 put: aTransition
 
@@ -1147,6 +1150,13 @@ printDotOn: aStream
 
 	tuples do:[:each | each printDotOn: aStream. aStream nextPut: Character lf ].! !
 
+!TransitionRelation methodsFor: 'printing' stamp: 'DF 9/23/2020 19:08:37'!
+printOn: aStream
+
+	super printOn: aStream.
+	
+	tuples printOn: aStream.! !
+
 !TransitionRelation methodsFor: 'accessing' stamp: 'DF 10/28/2020 12:23:33'!
 add: aTransition
 
@@ -1167,7 +1177,7 @@ add: aTransition
 tuples
 	^tuples! !
 
-!TransitionRelation methodsFor: 'as yet unclassified' stamp: 'DF 10/28/2020 12:49:25'!
+!TransitionRelation methodsFor: 'as yet unclassified' stamp: 'DF 11/28/2023 20:59:13'!
 epsilonClosureOf: aSet
 
 	| closure extension |
@@ -1179,7 +1189,7 @@ epsilonClosureOf: aSet
 	extension := Set new.
 	
 	closure do:[:each | 
-		extension addAll: ((self fromState: each at: Epsilon new) reject:[:other | closure includes: other ]) ].
+		extension addAll: ((self fromState: each at: Epsilon) reject:[:other | closure includes: other ]) ].
 	
 	[extension isEmpty]
 		whileFalse:[
@@ -1188,7 +1198,7 @@ epsilonClosureOf: aSet
 			extension := Set new.
 	
 			closure do:[:each | 
-				extension addAll: ((self fromState: each at: Epsilon new) reject:[:other | closure includes: other ]) ].
+				extension addAll: ((self fromState: each at: Epsilon) reject:[:other | closure includes: other ]) ].
 			].
 	
 	^closure! !
