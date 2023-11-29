@@ -1,7 +1,7 @@
-'From Cuis 6.0 [latest update: #6053] on 29 November 2023 at 2:56:49 pm'!
+'From Cuis 6.0 [latest update: #6053] on 29 November 2023 at 7:40:50 pm'!
 'Description A library of finite state machines'!
-!provides: 'Automata' 1 24!
-!requires: 'Kleene' 1 47 nil!
+!provides: 'Automata' 1 26!
+!requires: 'Kleene' 1 0 nil!
 SystemOrganization addCategory: #Automata!
 
 
@@ -490,7 +490,7 @@ asStateDiagram
 
 	^self asStateDiagram: #asString! !
 
-!Automaton methodsFor: 'morphic' stamp: 'DF 11/29/2023 12:42:46'!
+!Automaton methodsFor: 'morphic' stamp: 'DF 11/29/2023 19:35:41'!
 asStateDiagram: labelPrinter
 
 	| map aStateDiagram |
@@ -499,9 +499,7 @@ asStateDiagram: labelPrinter
 	
 	aStateDiagram := StateDiagram new.
 	
-	aStateDiagram stateRadius: 0.3.
-	
-	self states do:[:each | | aDiagramState | . aDiagramState := DiagramState new radius:0.3 ; label: (each perform: labelPrinter) ; yourself . map at: each put: aDiagramState ].
+	self states do:[:each | | aDiagramState | . aDiagramState := DiagramState new radius:0.5 ; label: (each perform: labelPrinter) ; yourself . map at: each put: aDiagramState ].
 	
 	map do:[:each | aStateDiagram addState: each ].
 	
@@ -618,7 +616,7 @@ stopState: anInteger
 
 	accepting add: anInteger! !
 
-!TuringMachine methodsFor: 'morphic' stamp: 'DF 1/30/2022 15:24:54'!
+!TuringMachine methodsFor: 'visualization' stamp: 'DF 1/30/2022 15:24:54'!
 asStateDiagram
 
 	| aStateDiagram diagramStates automatonStates diagramTransitions transitionSets |
