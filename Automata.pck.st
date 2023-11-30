@@ -1,9 +1,19 @@
-'From Cuis 6.0 [latest update: #6053] on 29 November 2023 at 7:40:50 pm'!
+'From Cuis 6.0 [latest update: #6053] on 30 November 2023 at 9:36:51 pm'!
 'Description A library of finite state machines'!
-!provides: 'Automata' 1 26!
+!provides: 'Automata' 1 29!
 !requires: 'Kleene' 1 0 nil!
 SystemOrganization addCategory: #Automata!
 
+
+!classDefinition: #InvalidTransitionError category: #Automata!
+Exception subclass: #InvalidTransitionError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Automata'!
+!classDefinition: 'InvalidTransitionError class' category: #Automata!
+InvalidTransitionError class
+	instanceVariableNames: ''!
 
 !classDefinition: #TapeMorph category: #Automata!
 LayoutMorph subclass: #TapeMorph
@@ -517,9 +527,9 @@ asStateDiagram: labelPrinter
 newTransitionRelation
 	^TransitionFunction new! !
 
-!DeterministicAutomaton methodsFor: 'accessing' stamp: 'DF 4/2/2021 21:52:25'!
+!DeterministicAutomaton methodsFor: 'accessing' stamp: 'DF 11/30/2023 16:55:24'!
 atState: aState atSymbol: aString
-	^transitions transitionAt: aState at: aString ifAbsent:[self error: 'Invalid transition'].! !
+	^transitions transitionAt: aState at: aString ifAbsent:[InvalidTransitionError new signal].! !
 
 !DFA methodsFor: 'accessing' stamp: 'DF 1/17/2022 16:09:39'!
 addTransition: aTransition
@@ -695,7 +705,7 @@ addTransitionFrom: fromState onSymbol: aSymbol to: toState
 newTransitionRelation
 	^TransitionRelation new! !
 
-!NFA methodsFor: 'as yet unclassified' stamp: 'DF 11/28/2023 15:20:35'!
+!NFA methodsFor: 'as yet unclassified' stamp: 'DF 11/30/2023 20:11:56'!
 toDFA: aDFAClass 
 	
 	| aDFA current todo |
@@ -738,7 +748,7 @@ toDFA: aDFAClass
 		]
 	].
 
-	aDFA states do:[:each | (each items allSatisfy:[:nfaState | self isAccepting: nfaState ]) ifTrue:[ aDFA markAsAccepting: each] ].
+	aDFA states do:[:each | (each items anySatisfy:[:nfaState | self isAccepting: nfaState ]) ifTrue:[ aDFA markAsAccepting: each] ].
 
 	^aDFA
 		! !
