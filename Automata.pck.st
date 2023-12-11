@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #6053] on 30 November 2023 at 9:36:51 pm'!
+'From Cuis 6.0 [latest update: #6053] on 11 December 2023 at 9:34:48 pm'!
 'Description A library of finite state machines'!
-!provides: 'Automata' 1 29!
+!provides: 'Automata' 1 36!
 !requires: 'Kleene' 1 0 nil!
 SystemOrganization addCategory: #Automata!
 
@@ -523,6 +523,64 @@ asStateDiagram: labelPrinter
 
 	! !
 
+!Automaton methodsFor: 'converting' stamp: 'DF 12/11/2023 15:02:18'!
+asAutomaton: automatonClass
+
+	"Answer an equivalent automatonClass with automatonClass stateClass states instead of whatever states self currently uses. 
+	
+	automatonClass is a factory for states and transitions. For example, using an SDLNFA class creates states 
+	that keep adjacency lists, and transitions (instances of SDLTransition) that update these lists when created. "
+	
+	| id result stateClass | 	
+	
+	result := automatonClass new.
+
+	stateClass := result stateBuilder.
+	
+	id := Dictionary new.
+	
+	states do:[:each | id at:each put: stateClass new].
+
+	states do:[:each | result addState: (id at: each) ].
+	
+	result alphabet: alphabet.
+	
+	result start: (id at:start).
+	
+	transitions do:[:eachTransition | 
+		result setTransitionFrom: (id at: eachTransition from) onSymbol: eachTransition symbol to: (id at: eachTransition to) ].
+	
+	accepting do:[:each | result markAsAccepting: (id at:each) ].
+	
+	^result! !
+
+!Automaton methodsFor: 'converting' stamp: 'DF 12/11/2023 13:28:36'!
+toCanonicForm
+	
+	| id anAutomaton |
+	
+	anAutomaton := self class new.
+		
+	anAutomaton alphabet: alphabet.
+	
+	id := Dictionary new.
+	
+	states asArray withIndexDo:[:eachState :i | 
+		id at: eachState put: i ].
+	
+	(1 to: states size) do:[:i | anAutomaton addState: i].
+		
+	transitions do:[:each |
+		anAutomaton setTransitionFrom: (id at:each from) onSymbol: (each symbol) to: (id at:each to).
+	].
+
+	anAutomaton start: (id at:start).
+	
+	accepting do:[:each | anAutomaton markAsAccepting: (id at: each) ].
+
+	^anAutomaton
+	! !
+
 !DeterministicAutomaton methodsFor: 'as yet unclassified' stamp: 'DF 4/2/2021 21:51:35'!
 newTransitionRelation
 	^TransitionFunction new! !
@@ -537,44 +595,25 @@ addTransition: aTransition
 	transitions put: aTransition
 	! !
 
-!DFA methodsFor: 'accessing' stamp: 'DF 9/27/2020 11:37:54'!
+!DFA methodsFor: 'accessing' stamp: 'DF 12/11/2023 15:01:31'!
 setTransitionFrom: fromState onSymbol: aSymbol to: toState
 
 	| aTransition |
 	
-	aTransition := Transition new.
+	aTransition := self transitionBuilder new.
 	
 	aTransition from: fromState ; symbol: aSymbol; to: toState.
 	
 	transitions put: aTransition
 	! !
 
-!DFA methodsFor: 'converting' stamp: 'DF 11/28/2023 15:54:21'!
-toCanonicForm
-	
-	| id aDFA |
-	
-	aDFA := self class new.
-		
-	aDFA alphabet: alphabet.
-	
-	id := Dictionary new.
-	
-	states asArray withIndexDo:[:eachState :i | 
-		id at: eachState put: i ].
-	
-	(1 to: states size) do:[:i | aDFA addState: i].
-		
-	transitions do:[:each |
-		aDFA setTransitionFrom: (id at:each from) onSymbol: (each symbol) to: (id at:each to).
-	].
+!DFA methodsFor: 'accessing' stamp: 'DF 12/11/2023 13:49:06'!
+stateBuilder
+	^CompositeState ! !
 
-	aDFA start: (id at:start).
-	
-	accepting do:[:each | aDFA markAsAccepting: (id at: each) ].
-
-	^aDFA
-	! !
+!DFA methodsFor: 'accessing' stamp: 'DF 12/11/2023 13:49:16'!
+transitionBuilder
+	^Transition! !
 
 !DFA class methodsFor: 'as yet unclassified' stamp: 'DF 12/14/2021 21:27:18'!
 example
@@ -684,28 +723,7 @@ new: anXraySymbol
 	
 	^aTuringMachine! !
 
-!NFA methodsFor: 'as yet unclassified' stamp: 'DF 11/28/2023 22:19:02'!
-addTransitionFrom: fromState onSymbol: aSymbol to: toState
-
-	| aTransition |
-	
-	aTransition := self transitionClass new.
-	
-	aTransition from: fromState.
-	
-	aTransition symbol: aSymbol.
-	
-	aTransition to: toState.
-	
-	transitions add: aTransition.
-	
-	! !
-
-!NFA methodsFor: 'as yet unclassified' stamp: 'DF 3/13/2021 12:51:50'!
-newTransitionRelation
-	^TransitionRelation new! !
-
-!NFA methodsFor: 'as yet unclassified' stamp: 'DF 11/30/2023 20:11:56'!
+!NFA methodsFor: 'converting' stamp: 'DF 11/30/2023 20:11:56'!
 toDFA: aDFAClass 
 	
 	| aDFA current todo |
@@ -753,9 +771,128 @@ toDFA: aDFAClass
 	^aDFA
 		! !
 
-!NFA methodsFor: 'as yet unclassified' stamp: 'DF 11/28/2023 22:18:41'!
-transitionClass
+!NFA methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2023 13:52:17'!
+addTransitionFrom: fromState onSymbol: aSymbol to: toState
+
+	| aTransition |
+	
+	aTransition := self transitionBuilder new.
+	
+	aTransition from: fromState.
+	
+	aTransition symbol: aSymbol.
+	
+	aTransition to: toState.
+	
+	transitions add: aTransition.
+	
+	! !
+
+!NFA methodsFor: 'as yet unclassified' stamp: 'DF 3/13/2021 12:51:50'!
+newTransitionRelation
+	^TransitionRelation new! !
+
+!NFA methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2023 14:48:19'!
+setTransitionFrom: fromState onSymbol: aSymbol to: toState
+
+	self addTransitionFrom: fromState onSymbol: aSymbol  to: toState
+	! !
+
+!NFA methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2023 13:52:04'!
+stateBuilder
+	^Object! !
+
+!NFA methodsFor: 'as yet unclassified' stamp: 'DF 12/11/2023 13:52:17'!
+transitionBuilder
 	^Transition! !
+
+!NFA methodsFor: 'algebra' stamp: 'DF 11/30/2023 21:21:21'!
+loop
+
+	| result |
+	
+	result := NFA new.
+	
+	result alphabet: alphabet.
+	
+	states do:[:each | result addState: each ].
+	
+	transitions tuples do:[:each | result transitions add: each].
+		
+	result start: start.
+	
+	accepting do:[:each | 
+		
+		result addTransitionFrom: each onSymbol: Epsilon to: start].
+	
+	accepting do:[:each | result markAsAccepting: each].
+	
+	result markAsAccepting: result start.
+	
+	^result
+	 ! !
+
+!NFA methodsFor: 'algebra' stamp: 'DF 12/11/2023 13:33:39'!
+seq: anNFA
+
+	"create an NFA that accepts the strict sequential composition of self followed by anNFA"
+
+	| result |
+	
+	result := NFA new.
+	
+	result alphabet: (alphabet union: anNFA alphabet).
+	
+	states do:[:each | result addState: each ].
+	
+	anNFA states do:[:each | result addState: each ].
+	
+	transitions tuples do:[:each | result transitions add: each].
+	
+	anNFA transitions tuples do:[:each | result transitions add: each].
+	
+	result start: start.
+		
+	accepting do:[:each |
+		
+		result addTransitionFrom: each onSymbol: Epsilon to: anNFA start].
+		
+	anNFA accepting do:[:each | result markAsAccepting: each].
+	
+	^result! !
+
+!NFA methodsFor: 'algebra' stamp: 'DF 12/11/2023 13:52:04'!
+union: anNFA
+
+	| result st |
+	
+	result := NFA new.
+	
+	result alphabet: (alphabet union: anNFA alphabet).
+	
+	states do:[:each | result addState: each ].
+	
+	anNFA states do:[:each | result addState: each ].
+	
+	transitions tuples do:[:each | result transitions add: each].
+	
+	anNFA transitions tuples do:[:each | result transitions add: each].
+	
+	st := self stateBuilder new.
+	
+	result addState: st.
+	
+	result start: st.
+	
+	result addTransitionFrom: st onSymbol: Epsilon to: start.
+	
+	result addTransitionFrom: st onSymbol: Epsilon to: anNFA start.
+	
+	accepting do:[:each | result markAsAccepting: each].
+	
+	anNFA accepting do:[:each | result markAsAccepting: each].
+	
+	^result! !
 
 !AutomatonVM methodsFor: 'accessing' stamp: 'DF 4/2/2021 21:17:41'!
 automaton: anAutomaton
@@ -1169,6 +1306,18 @@ do: aBlock
 	tuples do:[:eachDictionary | eachDictionary do: aBlock ].
 ! !
 
+!TransitionFunction methodsFor: 'converting' stamp: 'DF 12/11/2023 14:26:16'!
+asTransitionRelation
+
+	| aTransitionRelation |
+
+	aTransitionRelation := TransitionRelation new.
+	
+	self do:[:each |
+		aTransitionRelation addTransitionFrom: each from onSymbol: each symbol to: 	each to]
+	
+	^aTransitionRelation ! !
+
 !TransitionRelation methodsFor: 'printing' stamp: 'DF 9/24/2020 12:01:17'!
 printDotOn: aStream
 
@@ -1259,3 +1408,7 @@ initialize
 	tuples := Set new.
 	
 	index := Dictionary new.! !
+
+!TransitionRelation methodsFor: 'converting' stamp: 'DF 12/11/2023 14:26:39'!
+asTransitionRelation
+	^self! !
