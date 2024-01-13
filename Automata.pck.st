@@ -1,6 +1,6 @@
-'From Cuis 6.0 [latest update: #6053] on 11 December 2023 at 9:34:48 pm'!
+'From Cuis6.3 [latest update: #6156] on 13 January 2024 at 7:19:29 pm'!
 'Description A library of finite state machines'!
-!provides: 'Automata' 1 36!
+!provides: 'Automata' 1 40!
 !requires: 'Kleene' 1 0 nil!
 SystemOrganization addCategory: #Automata!
 
@@ -381,11 +381,11 @@ morphTopRight
 handlesMouseDown: aMouseButtonEvent
 	^ true! !
 
-!PointerMorph methodsFor: 'stepping' stamp: 'DF 1/2/2021 21:44:52'!
+!PointerMorph methodsFor: 'stepping' stamp: 'DF 1/13/2024 15:21:44'!
 stepAt: millisecondSinceLast
 
 	(target perform: getSelector) = index 
-		ifTrue:[ 	self contents: '' ] ifFalse:[self contents: '' ].
+		ifTrue:[ 	self contents: (UnicodeCodePoint codePoint: 29 :: asString ) ] ifFalse:[self contents: '' ].
 ! !
 
 !PointerMorph methodsFor: 'as yet unclassified' stamp: 'DF 1/3/2021 15:54:09'!
@@ -665,22 +665,24 @@ stopState: anInteger
 
 	accepting add: anInteger! !
 
-!TuringMachine methodsFor: 'visualization' stamp: 'DF 1/30/2022 15:24:54'!
+!TuringMachine methodsFor: 'visualization' stamp: 'DF 1/13/2024 19:17:40'!
 asStateDiagram
 
-	| aStateDiagram diagramStates automatonStates diagramTransitions transitionSets |
+	| r aStateDiagram diagramStates automatonStates diagramTransitions transitionSets |
 	
-	aStateDiagram _ StateDiagram new.
+	aStateDiagram := StateDiagram new.
 
-	automatonStates _ Set new.
+	automatonStates := Set new.
 	
 	transitions do:[:each | automatonStates add: each from. automatonStates add: each to ].
 	
-	diagramStates _ Dictionary new.
+	diagramStates := Dictionary new.
 	
-	automatonStates do:[:each | diagramStates at: each put: (DiagramState new radius:15 ; label: each asString) ].
+	r := aStateDiagram getProperty: #state_radius.
 	
-	(diagramStates at: start) initial: true.
+	automatonStates do:[:each | diagramStates at: each put: (DiagramState new radius:r ; label: each asString) ].
+	
+	aStateDiagram setInitialState: (diagramStates at: start).
 	
 	diagramStates do:[:each | aStateDiagram addState: each ].
 	
@@ -688,7 +690,7 @@ asStateDiagram
 	
 	"create turing machine transition objects from the program tuples"
 	
-	diagramTransitions _ transitions collect:[:each | each copy].
+	diagramTransitions := transitions collect:[:each | each copy].
 	
 	"replace the from/to states by their corresponding diagram states"
 	
@@ -696,7 +698,7 @@ asStateDiagram
 		
 	"collect all the transitions between the same pair of states into a single set."
 	
-	transitionSets _ Dictionary new.
+	transitionSets := Dictionary new.
 	
 	diagramTransitions do:[:each | 
 		transitionSets at: each key
@@ -704,6 +706,8 @@ asStateDiagram
 		ifAbsent:[ transitionSets at: each key put:{ each } asSet ] ].
 	
 	transitionSets do:[:each | each addConnectionsTo: aStateDiagram alphabet: alphabet ].
+	
+	aStateDiagram title: 'Turing Machine'.
 	
 	^aStateDiagram
 	! !
@@ -1233,10 +1237,10 @@ isMoveRightTransition
 isReadTransition
 	^symbol = writeSymbol and:[headDirection = 0]! !
 
-!TuringMachineTransition methodsFor: 'converting' stamp: 'DF 4/2/2021 19:19:33'!
+!TuringMachineTransition methodsFor: 'converting' stamp: 'DF 1/13/2024 15:12:49'!
 asTuple
 
-	^{ from . symbol . writeSymbol . ( (headDirection = 1) ifTrue:[ '^'] ifFalse:[ (headDirection = 0) ifTrue:[  '' ] ifFalse:[ ':='] ] )  . to }
+	^{ from . symbol . writeSymbol . ( (headDirection = 1) ifTrue:[ '→'] ifFalse:[ (headDirection = 0) ifTrue:[  '' ] ifFalse:[UnicodeCodePoint codePoint: 28 :: asString] ] )  . to }
 	! !
 
 !TuringMachineTransition class methodsFor: 'as yet unclassified' stamp: 'DF 1/16/2021 17:28:03'!
@@ -1299,6 +1303,18 @@ transitionAt: aState at: aSymbol ifAbsent: aBlock
 !TransitionFunction methodsFor: 'initialization' stamp: 'DF 9/25/2020 14:19:36'!
 initialize
 	tuples := Dictionary new! !
+
+!TransitionFunction methodsFor: 'enumerating' stamp: 'DF 1/13/2024 17:48:24'!
+collect: aBlock
+
+	| aSet |
+	
+	aSet := Set new.
+	
+	tuples do:[:eachDictionary | aSet addAll: (eachDictionary collect: [:each | aBlock value:each ]) ].
+	
+	^aSet
+	! !
 
 !TransitionFunction methodsFor: 'enumerating' stamp: 'DF 1/19/2022 19:17:22'!
 do: aBlock
